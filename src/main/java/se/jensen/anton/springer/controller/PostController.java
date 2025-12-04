@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.anton.springer.dto.PostRequestDTO;
 import se.jensen.anton.springer.dto.PostRespondDTO;
+import se.jensen.anton.springer.mapper.PostMapper;
 import se.jensen.anton.springer.model.Post;
 
 import java.util.ArrayList;
@@ -16,17 +17,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/posts")
 public class PostController {
-
+    private final PostMapper postMapper;
     List<Post> posts = new ArrayList<>();
+
+    public PostController(PostMapper postmapper) {
+        this.postMapper = postmapper;
+    }
 
     @GetMapping
     public ResponseEntity<List<PostRespondDTO>> getAll() {
 
         List<PostRespondDTO> response = posts.stream().
-                map(post -> new PostRespondDTO(
-                        post.getText(),
-                        post.getCreated(),
-                        post.getId())).toList();
+                map(postMapper::toPostRespondDTO)
+                .toList();
         return ResponseEntity.ok(response);
     }
 
@@ -35,11 +38,7 @@ public class PostController {
         if (id < 0 || id >= posts.size() || posts.get(id) == null) {
             return ResponseEntity.notFound().build();
         }
-        PostRespondDTO response = new PostRespondDTO(
-                posts.get(id).getText(),
-                posts.get(id).getCreated(),
-                posts.get(id).getId());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(postMapper.toPostRespondDTO(posts.get(id)));
     }
 
     @PutMapping("/{id}")
@@ -51,24 +50,19 @@ public class PostController {
         post.setText(dto.text());
         post.setCreated(dto.created());
 
-        PostRespondDTO response = new PostRespondDTO(post.getText(),
-                post.getCreated(), post.getId());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(postMapper.toPostRespondDTO(post));
     }
 
     @PostMapping
     public ResponseEntity<PostRespondDTO> post(@RequestBody @Valid PostRequestDTO dto) {
 
-        Post post = new Post();
-        post.setText(dto.text());
-        post.setCreated(dto.created());
-        post.setId(0L);
+        Post post = postMapper.toPost(dto);
 
         posts.add(post);
-        PostRespondDTO response = new PostRespondDTO(post.getText(),
-                post.getCreated(), post.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(postMapper.toPostRespondDTO(post));
     }
 
     @DeleteMapping("/{id}")
