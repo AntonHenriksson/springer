@@ -1,91 +1,53 @@
 package se.jensen.anton.springer.controller;
 
+import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.anton.springer.dto.UserRequestDTO;
 import se.jensen.anton.springer.dto.UserRespondDTO;
-import se.jensen.anton.springer.model.User;
-import se.jensen.anton.springer.repo.UserRepository;
+import se.jensen.anton.springer.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private UserRepository userRepository;
-    private List<User> users = new ArrayList<>();
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
     public ResponseEntity<List<UserRespondDTO>> getUsers() {
-        List<UserRespondDTO> dto = userRepository.findAll()
-                .stream()
-                .map(user -> new UserRespondDTO(user.getUsername()))
-                .toList();
-
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(userService.getAllUser());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserRespondDTO> getUser(@PathVariable int id) {
-        if (id < 0 || id >= users.size() || users.get(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        UserRespondDTO dto = new UserRespondDTO(
-                users.get(id).getUsername()
-        );
-
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<UserRespondDTO> getUser(@PathVariable long id) {
+        return ResponseEntity.ok(userService.findUserById(id));
     }
 
     @PostMapping
-    public ResponseEntity<UserRespondDTO> addUser(@RequestBody @Valid UserRequestDTO dtoUser) {
-        boolean exists = users.stream().anyMatch(u -> u.getUsername().
-                equalsIgnoreCase(dtoUser.username()));
-        if (exists) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-        User user = new User();
-        user.setUsername(dtoUser.username());
-        user.setPassword(dtoUser.password());
-
-        UserRespondDTO dto = new UserRespondDTO(user.getUsername());
-        //tog bort password return för säkerhet
-        users.add(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    public ResponseEntity<UserRespondDTO> addUser(@RequestBody @Valid UserRequestDTO dtoUser,
+                                                  ServletRequest servletRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.addUser(dtoUser));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserRespondDTO> updateUser(@PathVariable int id,
+    public ResponseEntity<UserRespondDTO> updateUser(@PathVariable long id,
                                                      @RequestBody @Valid UserRequestDTO dto) {
-        boolean exists = users.stream().anyMatch(u -> u.getUsername().
-                equalsIgnoreCase(dto.username()) && users.indexOf(u) != id);
-        if (exists) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-        if (id < 0 || id >= users.size() || users.get(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        User user = users.get(id);
-        user.setUsername(dto.username());
-        user.setPassword(dto.password());
-        UserRespondDTO dto2 = new UserRespondDTO(dto.username());
-        return ResponseEntity.ok(dto2);
+        userService.updateUser(id, dto);
+        return ResponseEntity.ok(userService.findUserById(id));
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable int id) {
-        if (id < 0 || id >= users.size() || users.get(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        users.remove(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable long id) {
+        userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 

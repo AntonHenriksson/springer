@@ -6,4 +6,5 @@ import se.jensen.anton.springer.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 
+    boolean existsByUsernameOrEmail(String username, String email);
 }
