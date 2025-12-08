@@ -1,8 +1,30 @@
 package se.jensen.anton.springer.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "app_user")
+
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
+    @Column(name = "password", nullable = false)
     private String password;
+    @Column(name = "role", nullable = false)
+    private String role;
+    @Column(name = "display_name", nullable = false)
+    private String displayName;
+    @Column(name = "bio", nullable = false)
+    private String bio;
+    @Column(name = "profile_image_path")
+    private String profileImagePath;
 
     public User(String username, String password) {
         this.username = username;
@@ -27,5 +49,53 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getProfileImagePath() {
+        return profileImagePath;
+    }
+
+    public void setProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
     }
 }

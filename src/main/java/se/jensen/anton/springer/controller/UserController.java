@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import se.jensen.anton.springer.dto.UserRequestDTO;
 import se.jensen.anton.springer.dto.UserRespondDTO;
 import se.jensen.anton.springer.model.User;
+import se.jensen.anton.springer.repo.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +15,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private UserRepository userRepository;
     private List<User> users = new ArrayList<>();
+
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping
     public ResponseEntity<List<UserRespondDTO>> getUsers() {
-        List<UserRespondDTO> dto = users.stream().
-                map(user -> new UserRespondDTO(
-                        user.getUsername()
-                )).toList();
+        List<UserRespondDTO> dto = userRepository.findAll()
+                .stream()
+                .map(user -> new UserRespondDTO(user.getUsername()))
+                .toList();
 
         return ResponseEntity.ok(dto);
     }
