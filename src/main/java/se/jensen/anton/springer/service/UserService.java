@@ -39,14 +39,14 @@ public class UserService {
                 .toList();
     }
 
-    public UserRespondDTO updateUser(long id, UserRequestDTO dto) {
+    public void updateUser(long id, UserRequestDTO dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found"));
         userMapper.updateEntity(dto, user);
         userRepository.save(user);
 
-        return userMapper.toDto(user);
+        userMapper.toDto(user);
     }
 
     public UserRespondDTO addUser(UserRequestDTO dto) {

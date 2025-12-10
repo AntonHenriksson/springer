@@ -33,4 +33,6 @@ public class UserMapper {
         user.setDisplayName(dto.displayName());
         user.setProfileImagePath(dto.profileImagePath());
     }
+
+    //hjälp metod till setters??
 }
