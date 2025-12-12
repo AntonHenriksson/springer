@@ -1,12 +1,23 @@
 package se.jensen.anton.springer.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
-
+@Entity
 public class Post {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
+
+    @Column(name = "text", nullable = false)
     private String text;
+    @Column(name = "created_at")
     private LocalDateTime created;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Post(String text, LocalDateTime created) {
         this.text = text;

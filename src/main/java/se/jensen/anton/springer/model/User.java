@@ -2,6 +2,8 @@ package se.jensen.anton.springer.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "app_user")
 
@@ -25,6 +27,9 @@ public class User {
     private String bio;
     @Column(name = "profile_image_path")
     private String profileImagePath;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Post> posts;
 
     public User(String username, String password) {
         this.username = username;
