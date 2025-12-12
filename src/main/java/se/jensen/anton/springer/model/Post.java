@@ -2,6 +2,7 @@ package se.jensen.anton.springer.model;
 
 import java.time.LocalDateTime;
 
+
 public class Post {
     private Long id = 0L;
     private String text;

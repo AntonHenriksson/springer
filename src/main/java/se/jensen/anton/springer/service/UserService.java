@@ -22,7 +22,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public UserRespondDTO findUserById(long id) {
+    public UserRespondDTO findUserById(Long id) {
 
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -55,7 +55,7 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    public void deleteUser(long id) {
+    public void deleteUser(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
             userRepository.deleteById(id);

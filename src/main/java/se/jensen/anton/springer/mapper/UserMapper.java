@@ -10,17 +10,13 @@ public class UserMapper {
 
     public UserRespondDTO toDto(User user) {
         return new UserRespondDTO(user.getUsername());
+
+        //lägga till och skapa ny dto constr när jag vet var vi är påväg i programmet
     }
 
     public User fromDto(UserRequestDTO dto) {
         User user = new User();
-        user.setUsername(dto.username());
-        user.setPassword(dto.password());
-        user.setEmail(dto.email());
-        user.setRole(dto.role());
-        user.setBio(dto.bio());
-        user.setDisplayName(dto.displayName());
-        user.setProfileImagePath(dto.profileImagePath());
+        updateEntity(dto, user);
         return user;
     }
 
@@ -34,5 +30,5 @@ public class UserMapper {
         user.setProfileImagePath(dto.profileImagePath());
     }
 
-    //hjälp metod till setters??
+
 }
