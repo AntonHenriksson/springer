@@ -6,8 +6,9 @@ import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDateTime;
 
-public record PostRequestDTO(@NotBlank String text,
-                             @NotNull @PastOrPresent LocalDateTime created) {
+public record PostRequestDTO(
+        @NotBlank String text,
+        @NotNull @PastOrPresent LocalDateTime created) {
 }
 
 

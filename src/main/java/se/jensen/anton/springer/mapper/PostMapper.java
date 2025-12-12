@@ -9,19 +9,22 @@ import se.jensen.anton.springer.model.Post;
 @Component
 public class PostMapper {
 
-    public Post toPost(PostRequestDTO postRequestDTO) {
+    public Post fromDto(PostRequestDTO dto) {
         Post post = new Post();
-        post.setText(postRequestDTO.text());
-        post.setCreated(postRequestDTO.created());
-        //inget id här?
+        updateEntity(dto, post);
         return post;
     }
 
-    public PostRespondDTO toPostRespondDTO(Post post) {
+    public PostRespondDTO toDto(Post post) {
         return new PostRespondDTO(
                 post.getText(),
                 post.getCreated(),
                 post.getId()
         );
+    }
+
+    public void updateEntity(PostRequestDTO dto, Post post) {
+        post.setCreated(dto.created());
+        post.setText(dto.text());
     }
 }

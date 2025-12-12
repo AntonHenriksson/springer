@@ -2,75 +2,46 @@ package se.jensen.anton.springer.controller;
 
 
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.anton.springer.dto.PostRequestDTO;
 import se.jensen.anton.springer.dto.PostRespondDTO;
-import se.jensen.anton.springer.mapper.PostMapper;
-import se.jensen.anton.springer.model.Post;
+import se.jensen.anton.springer.service.PostService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
-    private final PostMapper postMapper;
-    List<Post> posts = new ArrayList<>();
+    private final PostService postService;
 
-    public PostController(PostMapper postmapper) {
-        this.postMapper = postmapper;
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
     @GetMapping
     public ResponseEntity<List<PostRespondDTO>> getAll() {
 
-        List<PostRespondDTO> response = posts.stream().
-                map(postMapper::toPostRespondDTO)
-                .toList();
-        return ResponseEntity.ok(response);
+
+        return ResponseEntity.ok(postService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostRespondDTO> get(@PathVariable int id) {
-        if (id < 0 || id >= posts.size() || posts.get(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(postMapper.toPostRespondDTO(posts.get(id)));
+    public ResponseEntity<PostRespondDTO> get(@PathVariable Long id) {
+        return ResponseEntity.ok(postService.findById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostRespondDTO> put(@PathVariable int id, @RequestBody @Valid PostRequestDTO dto) {
-        if (id < 0 || id >= posts.size() || posts.get(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        Post post = posts.get(id);
-        post.setText(dto.text());
-        post.setCreated(dto.created());
-
-        return ResponseEntity.ok(postMapper.toPostRespondDTO(post));
+    public ResponseEntity<PostRespondDTO> update(@PathVariable Long id, @RequestBody @Valid PostRequestDTO dto) {
+        postService.updatePost(id, dto);
+        return ResponseEntity.ok(postService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<PostRespondDTO> post(@RequestBody @Valid PostRequestDTO dto) {
-
-        Post post = postMapper.toPost(dto);
-
-        posts.add(post);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(postMapper.toPostRespondDTO(post));
-    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
-        if (id < 0 || id >= posts.size() || posts.get(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        posts.remove(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
 

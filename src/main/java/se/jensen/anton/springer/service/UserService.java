@@ -39,7 +39,7 @@ public class UserService {
                 .toList();
     }
 
-    public void updateUser(long id, UserRequestDTO dto) {
+    public void updateUser(Long id, UserRequestDTO dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found"));
