@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import se.jensen.anton.springer.dto.PostRequestDTO;
-import se.jensen.anton.springer.dto.PostRespondDTO;
-import se.jensen.anton.springer.dto.UserRequestDTO;
-import se.jensen.anton.springer.dto.UserRespondDTO;
+import se.jensen.anton.springer.dto.*;
 import se.jensen.anton.springer.service.PostService;
 import se.jensen.anton.springer.service.UserService;
 
@@ -25,24 +22,24 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserRespondDTO>> getUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getUsers() {
         return ResponseEntity.ok(userService.getAllUser());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserRespondDTO> getUser(@PathVariable long id) {
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable long id) {
         return ResponseEntity.ok(userService.findUserById(id));
     }
 
     @PostMapping
-    public ResponseEntity<UserRespondDTO> addUser(@RequestBody @Valid UserRequestDTO dtoUser) {
+    public ResponseEntity<UserResponseDTO> addUser(@RequestBody @Valid UserRequestDTO dtoUser) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.addUser(dtoUser));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserRespondDTO> updateUser(@PathVariable long id,
-                                                     @RequestBody @Valid UserRequestDTO dto) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable long id,
+                                                      @RequestBody @Valid UserRequestDTO dto) {
         userService.updateUser(id, dto);
         return ResponseEntity.ok(userService.findUserById(id));
     }
@@ -56,15 +53,19 @@ public class UserController {
 
 
     @PostMapping("/{userId}/posts")
-    public ResponseEntity<PostRespondDTO> post(@PathVariable Long userId, @RequestBody @Valid PostRequestDTO dto) {
+    public ResponseEntity<PostResponseDTO> post(@PathVariable Long userId, @RequestBody @Valid PostRequestDTO dto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(postService.addPost(userId, dto));
     }
 
     @GetMapping("/{userId}/posts")
-    public ResponseEntity<PostRespondDTO> getById(@PathVariable Long userId) {
+    public ResponseEntity<PostResponseDTO> getById(@PathVariable Long userId) {
         return ResponseEntity.ok(postService.findById(userId));
     }
 
+    @GetMapping("/{userId}/with-posts")
+    public ResponseEntity<UserWithPostsResponseDto> getByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUserWithPosts(userId));
+    }
 }

@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.anton.springer.dto.PostRequestDTO;
-import se.jensen.anton.springer.dto.PostRespondDTO;
+import se.jensen.anton.springer.dto.PostResponseDTO;
 import se.jensen.anton.springer.service.PostService;
 
 import java.util.List;
@@ -21,19 +21,17 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostRespondDTO>> getAll() {
-
-
+    public ResponseEntity<List<PostResponseDTO>> getAll() {
         return ResponseEntity.ok(postService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostRespondDTO> get(@PathVariable Long id) {
+    public ResponseEntity<PostResponseDTO> get(@PathVariable Long id) {
         return ResponseEntity.ok(postService.findById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostRespondDTO> update(@PathVariable Long id, @RequestBody @Valid PostRequestDTO dto) {
+    public ResponseEntity<PostResponseDTO> update(@PathVariable Long id, @RequestBody @Valid PostRequestDTO dto) {
         postService.updatePost(id, dto);
         return ResponseEntity.ok(postService.findById(id));
     }

@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import se.jensen.anton.springer.dto.PostRequestDTO;
-import se.jensen.anton.springer.dto.PostRespondDTO;
+import se.jensen.anton.springer.dto.PostResponseDTO;
 import se.jensen.anton.springer.mapper.PostMapper;
 import se.jensen.anton.springer.model.Post;
 import se.jensen.anton.springer.model.User;
@@ -27,7 +27,7 @@ public class PostService {
         this.postMapper = postMapper;
     }
 
-    public PostRespondDTO findById(Long id) {
+    public PostResponseDTO findById(Long id) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isPresent()) {
             Post realPost = post.get();
@@ -36,7 +36,7 @@ public class PostService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
     }
 
-    public List<PostRespondDTO> findAll() {
+    public List<PostResponseDTO> findAll() {
         return postRepository.findAll()
                 .stream()
                 .map(postMapper::toDto)
@@ -50,7 +50,7 @@ public class PostService {
         postMapper.toDto(post);
     }
 
-    public PostRespondDTO addPost(Long userId, PostRequestDTO dto) {
+    public PostResponseDTO addPost(Long userId, PostRequestDTO dto) {
         Post post = postMapper.fromDto(dto);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found with id "
@@ -68,8 +68,4 @@ public class PostService {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
     }
-
-    //todo du är här
-
-
 }

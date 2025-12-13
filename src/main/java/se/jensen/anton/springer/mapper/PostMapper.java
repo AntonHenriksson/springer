@@ -3,7 +3,7 @@ package se.jensen.anton.springer.mapper;
 
 import org.springframework.stereotype.Component;
 import se.jensen.anton.springer.dto.PostRequestDTO;
-import se.jensen.anton.springer.dto.PostRespondDTO;
+import se.jensen.anton.springer.dto.PostResponseDTO;
 import se.jensen.anton.springer.model.Post;
 
 @Component
@@ -15,8 +15,8 @@ public class PostMapper {
         return post;
     }
 
-    public PostRespondDTO toDto(Post post) {
-        return new PostRespondDTO(
+    public PostResponseDTO toDto(Post post) {
+        return new PostResponseDTO(
                 post.getText(),
                 post.getCreated(),
                 post.getId()

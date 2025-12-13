@@ -103,4 +103,12 @@ public class User {
     public void setProfileImagePath(String profileImagePath) {
         this.profileImagePath = profileImagePath;
     }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
 }
