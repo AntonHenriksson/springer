@@ -42,6 +42,6 @@ public class PostController {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
-
+//todo create with user
 
 }

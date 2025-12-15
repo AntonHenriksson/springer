@@ -1,5 +1,6 @@
 package se.jensen.anton.springer.mapper;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import se.jensen.anton.springer.dto.UserRequestDTO;
 import se.jensen.anton.springer.dto.UserResponseDTO;
@@ -7,6 +8,11 @@ import se.jensen.anton.springer.model.User;
 
 @Component
 public class UserMapper {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserMapper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public UserResponseDTO toDto(User user) {
         return new UserResponseDTO(user.getUsername(), user.getEmail(), user.getRole());
@@ -22,7 +28,7 @@ public class UserMapper {
 
     public void updateEntity(UserRequestDTO dto, User user) {
         user.setUsername(dto.username());
-        user.setPassword(dto.password());
+        user.setPassword(passwordEncoder.encode(dto.password()));
         user.setEmail(dto.email());
         user.setRole(dto.role());
         user.setBio(dto.bio());
