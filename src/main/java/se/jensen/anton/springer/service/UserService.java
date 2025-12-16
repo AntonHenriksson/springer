@@ -83,5 +83,11 @@ public class UserService {
         return new UserWithPostsResponseDto(dto, posts);
     }
 
-
+    public UserResponseDTO getUserByName(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found"));
+        UserResponseDTO dto = userMapper.toDto(user);
+        return dto;
+    }
 }
