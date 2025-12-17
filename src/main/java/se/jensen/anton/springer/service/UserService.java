@@ -1,6 +1,7 @@
 package se.jensen.anton.springer.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import se.jensen.anton.springer.dto.PostResponseDTO;
@@ -20,11 +21,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PostMapper postMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, PostMapper postMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PostMapper postMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.postMapper = postMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserResponseDTO findUserById(Long id) {
@@ -56,6 +59,7 @@ public class UserService {
 
     public UserResponseDTO addUser(UserRequestDTO dto) {
         User user = userMapper.fromDto(dto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return userMapper.toDto(user);
     }
@@ -77,7 +81,7 @@ public class UserService {
                 .stream()
                 .map(postMapper::toDto)
                 .toList();
-        UserResponseDTO dto = new UserResponseDTO(user.getUsername()
+        UserResponseDTO dto = new UserResponseDTO(user.getId(), user.getUsername()
                 , user.getEmail()
                 , user.getRole());
         return new UserWithPostsResponseDto(dto, posts);

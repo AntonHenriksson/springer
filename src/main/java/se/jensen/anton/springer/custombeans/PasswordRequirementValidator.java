@@ -1,5 +1,6 @@
 package se.jensen.anton.springer.custombeans;
 
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
