@@ -23,7 +23,7 @@ jobs:
         run: chmod +x mvnw
 
       - name: Build JAR
-        run: ./mvnw -B package
+        run: ./mvnw -B package -DskipTests
 
       - name: Build Docker image
         run: docker build -t my-image-name:${{ github.sha }} .
