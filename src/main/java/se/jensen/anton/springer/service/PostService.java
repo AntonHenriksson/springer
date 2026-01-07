@@ -46,6 +46,7 @@ public class PostService {
     public void updatePost(Long id, PostRequestDTO dto) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        
         postMapper.updateEntity(dto, post);
         postMapper.toDto(post);
     }

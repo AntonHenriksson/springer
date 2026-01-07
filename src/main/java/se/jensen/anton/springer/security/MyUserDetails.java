@@ -10,10 +10,15 @@ import java.util.Collection;
 import java.util.List;
 
 public class MyUserDetails implements UserDetails {
+
     private final User user;
 
     public MyUserDetails(User user) {
         this.user = user;
+    }
+
+    public Long getId() {
+        return user.getId();
     }
 
     @Override
@@ -29,5 +34,9 @@ public class MyUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+
+    public User getUser() {
+        return user;
     }
 }

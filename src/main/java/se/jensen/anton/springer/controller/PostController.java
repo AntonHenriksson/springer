@@ -33,14 +33,14 @@ public class PostController {
         return ResponseEntity.ok(postService.findById(id));
     }
 
-    //här vill vi ha så att man kan bara ändra sina egna posts
+    @PreAuthorize("hasRole('ADMIN') or @postSecurity.isOwner(#id)")
     @PutMapping("/{id}")
     public ResponseEntity<PostResponseDTO> update(@PathVariable Long id, @RequestBody @Valid PostRequestDTO dto) {
         postService.updatePost(id, dto);
         return ResponseEntity.ok(postService.findById(id));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @postSecurity.isOwner(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         postService.deletePost(id);
