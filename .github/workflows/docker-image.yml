@@ -19,6 +19,9 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
       - name: Build JAR
         run: ./mvnw -B package -DskipTests
 
