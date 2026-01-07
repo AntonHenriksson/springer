@@ -36,6 +36,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findUserById(id));
     }
 
+    //let everyone be able to create a user
     @PermitAll
     @PostMapping
     public ResponseEntity<UserResponseDTO> addUser(@RequestBody @Valid UserRequestDTO dtoUser) {
@@ -43,6 +44,7 @@ public class UserController {
                 .body(userService.addUser(dtoUser));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
                                                       @RequestBody @Valid UserRequestDTO dto) {
@@ -50,14 +52,14 @@ public class UserController {
         return ResponseEntity.ok(userService.findUserById(id));
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping("/{userId}/posts")
     public ResponseEntity<PostResponseDTO> post(@PathVariable Long userId, @RequestBody @Valid PostRequestDTO dto) {
         return ResponseEntity
