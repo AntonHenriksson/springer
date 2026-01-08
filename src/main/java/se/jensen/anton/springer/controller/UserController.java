@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUser());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.findUserById(id));
@@ -44,15 +44,22 @@ public class UserController {
                 .body(userService.addUser(dtoUser));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
-                                                      @RequestBody @Valid UserRequestDTO dto) {
-        userService.updateUser(id, dto);
-        return ResponseEntity.ok(userService.findUserById(id));
+                                                      @RequestBody @Valid UserUpdateRequestDTO dto) {
+        return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> updatePassword(@PathVariable Long id,
+                                                          @RequestBody @Valid UserPasswordRequestDTO dto) {
+        userService.updatePassword(id, dto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
@@ -60,14 +67,14 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @PostMapping("/{userId}/posts")
-    public ResponseEntity<PostResponseDTO> post(@PathVariable Long userId, @RequestBody @Valid PostRequestDTO dto) {
+    @PostMapping("/posts")
+    public ResponseEntity<PostResponseDTO> post(@RequestBody @Valid PostRequestDTO dto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(postService.addPost(userId, dto));
+                .body(postService.addPost(dto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{userId}/with-posts")
     public ResponseEntity<UserWithPostsResponseDto> getByPostsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserWithPosts(userId));

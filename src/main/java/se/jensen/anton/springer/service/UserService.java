@@ -1,13 +1,12 @@
 package se.jensen.anton.springer.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import se.jensen.anton.springer.dto.PostResponseDTO;
-import se.jensen.anton.springer.dto.UserRequestDTO;
-import se.jensen.anton.springer.dto.UserResponseDTO;
-import se.jensen.anton.springer.dto.UserWithPostsResponseDto;
+import se.jensen.anton.springer.dto.*;
 import se.jensen.anton.springer.mapper.PostMapper;
 import se.jensen.anton.springer.mapper.UserMapper;
 import se.jensen.anton.springer.model.User;
@@ -30,6 +29,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    //only admin, consider making a /public and publicResponseDTO for users
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponseDTO findUserById(Long id) {
 
         Optional<User> user = userRepository.findById(id);
@@ -40,6 +41,8 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 
+    //only admin should see this
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDTO> getAllUser() {
         return userRepository.findAll()
                 .stream()
@@ -47,16 +50,29 @@ public class UserService {
                 .toList();
     }
 
-    public void updateUser(Long id, UserRequestDTO dto) {
+    @Transactional
+    @PreAuthorize("@userAuth.checkIfAuth(#id)")
+    public UserResponseDTO updateUser(Long id, UserUpdateRequestDTO dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found"));
         userMapper.updateEntity(dto, user);
         userRepository.save(user);
 
-        userMapper.toDto(user);
+        return userMapper.toDto(user);
     }
 
+    @Transactional
+    @PreAuthorize("@userAuth.checkIfAuth(#id)")
+    public void updatePassword(Long id, UserPasswordRequestDTO dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        user.setPassword(passwordEncoder.encode(dto.password()));
+    }
+
+    //todo måste för tillfället vara öppen till andra
+    //todo hur fungerar /public???
+    @Transactional
     public UserResponseDTO addUser(UserRequestDTO dto) {
         User user = userMapper.fromDto(dto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -64,6 +80,8 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    @Transactional
+    @PreAuthorize("@userAuth.checkIfAuth(#id)")
     public void deleteUser(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -73,6 +91,7 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 
+    @PreAuthorize("@userAuth.checkIfAuth(#id)")
     public UserWithPostsResponseDto getUserWithPosts(Long id) {
         User user = userRepository.findUserWithPosts(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -81,12 +100,14 @@ public class UserService {
                 .stream()
                 .map(postMapper::toDto)
                 .toList();
-        UserResponseDTO dto = new UserResponseDTO(user.getId(), user.getUsername()
-                , user.getEmail()
-                , user.getRole());
+        UserResponseDTO dto = userMapper.toDto(user);
         return new UserWithPostsResponseDto(dto, posts);
     }
 
+    //consider publicResponseDto
+    //consider making a /public class for this instead
+    //right now this is a /me in controller
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public UserResponseDTO getUserByName(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(

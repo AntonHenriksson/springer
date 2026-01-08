@@ -12,20 +12,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(name = "username", unique = true, nullable = false, length = 50)
     private String username;
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false, length = 60)
     private String email;
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 100)
     private String password;
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, length = 20)
     private String role;
-    @Column(name = "display_name", nullable = false)
+    @Column(name = "display_name", nullable = false, length = 30)
     private String displayName;
-    @Column(name = "bio", nullable = false)
+    @Column(name = "bio", nullable = false, length = 200)
     private String bio;
-    @Column(name = "profile_image_path")
+    @Column(name = "profile_image_path", length = 100)
     private String profileImagePath;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)

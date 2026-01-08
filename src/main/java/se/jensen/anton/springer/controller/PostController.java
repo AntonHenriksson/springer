@@ -33,14 +33,13 @@ public class PostController {
         return ResponseEntity.ok(postService.findById(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @postSecurity.isOwner(#id)")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping("/{id}")
     public ResponseEntity<PostResponseDTO> update(@PathVariable Long id, @RequestBody @Valid PostRequestDTO dto) {
-        postService.updatePost(id, dto);
-        return ResponseEntity.ok(postService.findById(id));
+        return ResponseEntity.ok(postService.updatePost(id, dto));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @postSecurity.isOwner(#id)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         postService.deletePost(id);

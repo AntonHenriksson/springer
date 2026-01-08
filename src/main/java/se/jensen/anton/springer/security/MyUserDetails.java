@@ -23,8 +23,12 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+        String role = user.getRole();
+        if (role == null) return List.of();
+        String normalized = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+        return List.of(new SimpleGrantedAuthority(normalized));
     }
+
 
     @Override
     public @Nullable String getPassword() {
@@ -39,4 +43,25 @@ public class MyUserDetails implements UserDetails {
     public User getUser() {
         return user;
     }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

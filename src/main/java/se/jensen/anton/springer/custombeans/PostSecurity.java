@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import se.jensen.anton.springer.repo.PostRepository;
 import se.jensen.anton.springer.security.SecurityUtils;
 
-@Component
+@Component("postSecurity")
 public class PostSecurity {
 
     private final PostRepository postRepository;
@@ -15,6 +15,6 @@ public class PostSecurity {
 
     public boolean isOwner(Long postId) {
         Long userId = SecurityUtils.getCurrentUserId();
-        return postRepository.existsByIdAndUserId(postId, userId);
+        return userId != null && postRepository.existsByIdAndUserId(postId, userId);
     }
 }

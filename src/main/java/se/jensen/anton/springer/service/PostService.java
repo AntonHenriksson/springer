@@ -1,7 +1,9 @@
 package se.jensen.anton.springer.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import se.jensen.anton.springer.dto.PostRequestDTO;
 import se.jensen.anton.springer.dto.PostResponseDTO;
@@ -10,9 +12,9 @@ import se.jensen.anton.springer.model.Post;
 import se.jensen.anton.springer.model.User;
 import se.jensen.anton.springer.repo.PostRepository;
 import se.jensen.anton.springer.repo.UserRepository;
+import se.jensen.anton.springer.security.SecurityUtils;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -27,6 +29,7 @@ public class PostService {
         this.postMapper = postMapper;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public PostResponseDTO findById(Long id) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isPresent()) {
@@ -36,6 +39,7 @@ public class PostService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public List<PostResponseDTO> findAll() {
         return postRepository.findAll()
                 .stream()
@@ -43,24 +47,30 @@ public class PostService {
                 .toList();
     }
 
-    public void updatePost(Long id, PostRequestDTO dto) {
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN') or @postSecurity.isOwner(#id)")
+    public PostResponseDTO updatePost(Long id, PostRequestDTO dto) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-        
+
         postMapper.updateEntity(dto, post);
-        postMapper.toDto(post);
+        return postMapper.toDto(post);
     }
 
-    public PostResponseDTO addPost(Long userId, PostRequestDTO dto) {
+
+    @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public PostResponseDTO addPost(PostRequestDTO dto) {
+
         Post post = postMapper.fromDto(dto);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found with id "
-                        + userId));
-        post.setUser(user);
+        User currentUser = SecurityUtils.requireCurrentUser(userRepository);
+        post.setUser(currentUser);
         postRepository.save(post);
         return postMapper.toDto(post);
     }
 
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN') or @postSecurity.isOwner(#id)")
     public void deletePost(Long id) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isPresent()) {
