@@ -24,19 +24,21 @@ public class UserController {
         this.postService = postService;
     }
 
+    // Endpoint to get all users (ADMIN only)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getUsers() {
         return ResponseEntity.ok(userService.getAllUser());
     }
 
+    // Endpoint to get a single user (All get access)
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.findUserById(id));
     }
 
-    //let everyone be able to create a user
+    // Endpoint to let everyone create a user
     @PermitAll
     @PostMapping
     public ResponseEntity<UserResponseDTO> addUser(@RequestBody @Valid UserRequestDTO dtoUser) {
@@ -44,6 +46,7 @@ public class UserController {
                 .body(userService.addUser(dtoUser));
     }
 
+    // Endpoint to update a user
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
@@ -51,6 +54,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
+    // Endpoint to update password
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updatePassword(@PathVariable Long id,
@@ -59,6 +63,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    // Endpoint to delete a user
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
@@ -66,6 +71,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    // Endpoint to create a post as a user
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping("/posts")
     public ResponseEntity<PostResponseDTO> post(@RequestBody @Valid PostRequestDTO dto) {
@@ -74,12 +80,14 @@ public class UserController {
                 .body(postService.addPost(dto));
     }
 
+    // Endpoint to get post by users id
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{userId}/with-posts")
     public ResponseEntity<UserWithPostsResponseDto> getByPostsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserWithPosts(userId));
     }
 
+    // Endpoint to show the user who is logged in (yourself)
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getMe(Authentication authentication) {
