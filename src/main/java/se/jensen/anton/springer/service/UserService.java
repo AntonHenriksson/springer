@@ -92,7 +92,7 @@ public class UserService {
     }
 
     @PreAuthorize("@userAuth.checkIfAuth(#id)")
-    public UserWithPostsResponseDto getUserWithPosts(Long id) {
+    public UserWithPostsResponseDTO getUserWithPosts(Long id) {
         User user = userRepository.findUserWithPosts(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found"));
@@ -101,7 +101,7 @@ public class UserService {
                 .map(postMapper::toDto)
                 .toList();
         UserResponseDTO dto = userMapper.toDto(user);
-        return new UserWithPostsResponseDto(dto, posts);
+        return new UserWithPostsResponseDTO(dto, posts);
     }
 
     //consider publicResponseDto
