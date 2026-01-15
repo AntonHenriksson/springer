@@ -83,7 +83,7 @@ public class UserController {
     // Endpoint to get post by users id
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{userId}/with-posts")
-    public ResponseEntity<UserWithPostsResponseDto> getByPostsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<UserWithPostsResponseDTO> getByPostsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserWithPosts(userId));
     }
 
