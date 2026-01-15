@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.anton.springer.dto.*;
 import se.jensen.anton.springer.service.PostService;
@@ -88,10 +87,10 @@ public class UserController {
     }
 
     // Endpoint to show the user who is logged in (yourself)
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getMe(Authentication authentication) {
-        String username = authentication.getName();
-        return ResponseEntity.ok(userService.getUserByName(username));
+    public ResponseEntity<UserResponseDTO> getMe() {
+        return ResponseEntity.ok(userService.getCurrentUser());
     }
+
 }
