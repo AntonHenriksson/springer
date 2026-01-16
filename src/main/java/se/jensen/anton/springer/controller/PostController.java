@@ -28,7 +28,7 @@ public class PostController {
     public ResponseEntity<Page<FeedResponseDTO>> getGlobalFeed(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-            ) {
+    ) {
         Page<FeedResponseDTO> feed = postService.getGlobalFeed(page, size);
         return ResponseEntity.ok(feed);
     }
@@ -37,7 +37,7 @@ public class PostController {
     @GetMapping("/me")
     public ResponseEntity<Page<FeedResponseDTO>> getMyWall(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10")int size,
+            @RequestParam(defaultValue = "10") int size,
             Principal principal
     ) {
         Page<FeedResponseDTO> wall = postService.getMyWall(principal.getName(), page, size);
