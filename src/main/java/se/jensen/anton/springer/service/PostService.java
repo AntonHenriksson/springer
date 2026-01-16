@@ -20,7 +20,6 @@ import se.jensen.anton.springer.repo.PostRepository;
 import se.jensen.anton.springer.repo.UserRepository;
 import se.jensen.anton.springer.security.SecurityUtils;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
