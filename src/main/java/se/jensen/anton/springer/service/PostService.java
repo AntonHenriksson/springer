@@ -62,6 +62,7 @@ public class PostService {
                 .map(feedMapper::toDto);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public Page<FeedResponseDTO> getMyWall(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));

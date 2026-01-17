@@ -74,6 +74,25 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.content[1].text").exists())
                 .andExpect(jsonPath("$.content[2].text").exists());
     }
+
+    @Test
+    void shouldGetMyWall() throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/posts/me")
+                                .with(httpBasic("Admin", "password1"))
+                                .param("page", "0")
+                                .param("size", "10")
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(3))
+                .andExpect(jsonPath("$.content[0].text").value("post 0"))
+                .andExpect(jsonPath("$.content[1].text").value("post 1"))
+                .andExpect(jsonPath("$.content[2].text").value("post 2"));
+    }
 }
+
+
 
 
