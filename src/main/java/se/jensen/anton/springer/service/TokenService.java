@@ -1,5 +1,7 @@
 package se.jensen.anton.springer.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -18,7 +20,7 @@ public class TokenService {
     //skapar token
     //signerar token
     //returnerar token i strängformat
-
+    private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
     private final JwtEncoder jwtEncoder;
 
     public TokenService(JwtEncoder jwtEncoder) {
@@ -27,6 +29,9 @@ public class TokenService {
 
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
+
+        logger.debug("Generating JWT token for user: {}", authentication.getName());
+
         String scope = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
@@ -40,8 +45,15 @@ public class TokenService {
                 .subject(authentication.getName())
                 .claim("scope", scope)
                 .build();
-        return jwtEncoder
-                .encode(JwtEncoderParameters.from(claims))
-                .getTokenValue();
+        try {
+            String token = jwtEncoder.encode(JwtEncoderParameters
+                            .from(claims))
+                    .getTokenValue();
+            logger.info("Token generated for user : {}, expires in 1 hour", authentication.getName());
+            return token;
+        } catch (Exception e) {
+            logger.error("Error generating token for user: {}", authentication.getName());
+            throw e;
+        }
     }
 }
