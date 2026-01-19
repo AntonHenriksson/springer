@@ -14,7 +14,9 @@ public class PostSecurity {
     }
 
     public boolean isOwner(Long postId) {
-        Long userId = SecurityUtils.getCurrentUserId();
-        return userId != null && postRepository.existsByIdAndUserId(postId, userId);
+        String username = SecurityUtils.getCurrentUsername();
+        return username != null && postRepository.existsByIdAndUser_username(postId, username);
     }
+
+
 }
