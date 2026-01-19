@@ -68,7 +68,6 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.content[1].text").value("post 2"))
                 .andExpect(jsonPath("$.content[2].text").value("post 3"));
     }
-
 }
 
 
