@@ -23,6 +23,7 @@ public class PostController {
         this.postService = postService;
     }
 
+    // Returnerar det globala flödet av inlägg för alla användare, med sidindelning
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<Page<FeedResponseDTO>> getGlobalFeed(
@@ -33,6 +34,7 @@ public class PostController {
         return ResponseEntity.ok(feed);
     }
 
+    // Returnerar det personliga flödet för den inloggade användaren, med sidindelning
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/me")
     public ResponseEntity<Page<FeedResponseDTO>> getMyWall(
