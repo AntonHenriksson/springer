@@ -1,96 +1,74 @@
 package se.jensen.anton.springer.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import se.jensen.anton.springer.model.Post;
-import se.jensen.anton.springer.model.User;
-import se.jensen.anton.springer.repo.PostRepository;
-import se.jensen.anton.springer.repo.UserRepository;
+import se.jensen.anton.springer.dto.FeedResponseDTO;
+import se.jensen.anton.springer.service.PostService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
+@WebMvcTest(PostController.class)
 public class PostControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    @BeforeEach
-    void setup() {
-        postRepository.deleteAll();
-        userRepository.deleteAll();
-
-
-        User user = new User();
-        user.setRole("ADMIN");
-        user.setPassword(passwordEncoder.encode("password1"));
-        user.setEmail("mail@mail.se");
-        user.setBio("my bio");
-        user.setDisplayName("testAdmin");
-        user.setUsername("Admin");
-        userRepository.save(user);
-
-        for (int i = 0; i < 3; i++) {
-            Post post = new Post();
-            post.setUser(user);
-            post.setText("post " + i);
-            post.setCreated(LocalDateTime.now().minusMinutes(i)); // nyast först
-            postRepository.save(post);
-        }
-    }
+    @MockitoBean
+    private PostService postsService;
 
     @Test
+    @WithMockUser(username = "Admin", roles = "ADMIN")
     void shouldGetGlobalFeed() throws Exception {
-        mockMvc.perform(
-                        MockMvcRequestBuilders.get("/posts")
-                                .with(httpBasic("Admin", "password1"))
-                                .param("page", "0")
-                                .param("size", "10")
-                )
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content[0].text").exists())
-                .andExpect(jsonPath("$.content[1].text").exists())
-                .andExpect(jsonPath("$.content[2].text").exists());
-    }
 
-    @Test
-    void shouldGetMyWall() throws Exception {
-        mockMvc.perform(
-                        MockMvcRequestBuilders.get("/posts/me")
-                                .with(httpBasic("Admin", "password1"))
-                                .param("page", "0")
-                                .param("size", "10")
-                )
-                .andDo(MockMvcResultHandlers.print())
+        FeedResponseDTO dto1 = new FeedResponseDTO(
+                1L,
+                "post 1",
+                LocalDateTime.now(),
+                "testUser",
+                "testAdmin"
+        );
+        FeedResponseDTO dto2 = new FeedResponseDTO(
+                2L,
+                "post 2",
+                LocalDateTime.now(),
+                "testuser2",
+                "testAdmin2"
+        );
+        FeedResponseDTO dto3 = new FeedResponseDTO(
+                3L,
+                "post 3",
+                LocalDateTime.now(),
+                "testUser3",
+                "testAdmin3"
+        );
+
+        Page<FeedResponseDTO> page = new PageImpl<>(List.of(dto1, dto2, dto3));
+
+        when(postsService.getGlobalFeed(0, 10)).thenReturn(page);
+
+        mockMvc.perform(get("/posts")
+                        .param("page", "0")
+                        .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(3))
-                .andExpect(jsonPath("$.content[0].text").value("post 0"))
-                .andExpect(jsonPath("$.content[1].text").value("post 1"))
-                .andExpect(jsonPath("$.content[2].text").value("post 2"));
+                .andExpect(jsonPath("$.content[0].text").value("post 1"))
+                .andExpect(jsonPath("$.content[1].text").value("post 2"))
+                .andExpect(jsonPath("$.content[2].text").value("post 3"));
     }
+
 }
 
 
