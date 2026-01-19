@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.server.ResponseStatusException;
 import se.jensen.anton.springer.model.User;
 import se.jensen.anton.springer.repo.UserRepository;
@@ -13,21 +14,26 @@ public final class SecurityUtils {
     private SecurityUtils() {
     }
 
-    public static Long getCurrentUserId() {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
+    public static String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
             return null;
         }
 
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof MyUserDetails userDetails) {
-            return userDetails.getId();
+            return userDetails.getUsername();
         }
 
-        throw new IllegalStateException("Unexpected principal type: " + principal);
+        if (principal instanceof Jwt jwt) {
+            return jwt.getSubject();
+        }
+
+        throw new IllegalStateException("Unexpected principal type: " + principal.getClass().getName());
     }
 
 
@@ -48,11 +54,11 @@ public final class SecurityUtils {
     }
 
     public static User requireCurrentUser(UserRepository userRepository) {
-        Long currentUserId = getCurrentUserId();
-        if (currentUserId == null) {
+        String currentUsername = getCurrentUsername();
+        if (currentUsername == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
-        return userRepository.findById(currentUserId)
+        return userRepository.findByUsername(currentUsername)
                 .orElseThrow(()
                         -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
     }

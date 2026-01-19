@@ -36,9 +36,13 @@ public class TokenService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
         JwtClaimsSet claims = JwtClaimsSet.builder()
+
+
                 //self fungerar men inte att rekommendera
                 //hade lite problem i tester så fick kolla upp
                 //blir kvar tillsvidare
+
+
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))

@@ -9,10 +9,10 @@ public class UserAuth {
     public UserAuth() {
     }
 
-    public boolean checkIfAuth(Long userId) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
+    public boolean checkIfAuth(String username) {
+        String currentUsername = SecurityUtils.getCurrentUsername();
 
-        if (currentUserId == null || userId == null) {
+        if (currentUsername == null || username == null) {
             return false;
         }
 
@@ -20,6 +20,6 @@ public class UserAuth {
             return true;
         }
 
-        return currentUserId.equals(userId);
+        return currentUsername.equals(username);
     }
 }
