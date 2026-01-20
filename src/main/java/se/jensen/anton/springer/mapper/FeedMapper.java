@@ -12,6 +12,7 @@ public class FeedMapper {
                 post.getId(),
                 post.getText(),
                 post.getCreated(),
+                post.getUser().getId(),
                 post.getUser().getUsername(),
                 post.getUser().getDisplayName()
         );

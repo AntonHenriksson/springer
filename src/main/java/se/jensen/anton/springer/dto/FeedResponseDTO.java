@@ -6,6 +6,7 @@ public record FeedResponseDTO(
         Long id,
         String text,
         LocalDateTime created,
+        Long userId,
         String username,
         String displayName
 
