@@ -8,7 +8,7 @@ import se.jensen.anton.springer.model.Comment;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Page<Comment> findAllByPostId(
+    Page<Comment> findByPostId(
             Long postId,
             Pageable pageable);
 }
