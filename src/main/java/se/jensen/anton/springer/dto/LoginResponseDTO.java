@@ -1,4 +1,4 @@
 package se.jensen.anton.springer.dto;
 
-public record LoginResponseDTO(String token) {
+public record LoginResponseDTO(String token, Long userId) {
 }
