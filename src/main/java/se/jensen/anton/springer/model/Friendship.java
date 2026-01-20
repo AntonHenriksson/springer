@@ -14,7 +14,7 @@ import java.time.Instant;
                 )
         }
 )
-public class FriendRequest {
+public class Friendship {
     public enum Status {
         PENDING, ACCEPTED, DECLINED
     }
