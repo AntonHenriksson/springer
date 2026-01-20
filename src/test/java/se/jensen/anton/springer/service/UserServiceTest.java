@@ -3,19 +3,22 @@ package se.jensen.anton.springer.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import se.jensen.anton.springer.dto.UserRequestDTO;
+import se.jensen.anton.springer.dto.UserResponseDTO;
 import se.jensen.anton.springer.mapper.UserMapper;
 import se.jensen.anton.springer.model.User;
 import se.jensen.anton.springer.repo.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,18 +39,26 @@ public class UserServiceTest {
     @InjectMocks
     UserService userService;
 
+    //unit test som testar service logik och inget annat
 
-    //testar service ska pass med id = 0
+
+    //om testet inte kastar exception ska det passa
+    //verifierar bara om metoden har kallats
     @Test
     void deleteUserTest() {
-        Long id = 0L;
+        //arrange
         User user = new User();
-        user.setId(id);
-        when(userRepository.findById(id))
-                .thenReturn(Optional.of(user));
+        user.setId(0L);
 
-        userService.deleteUser(id);
-        verify(userRepository).deleteById(id);
+        //stubba userRepository eftersom .orElseThrow kommer kasta
+        //pga ingen jpa
+        when(userRepository.findById(0L))
+                .thenReturn(Optional.of(user));
+        //act
+        userService.deleteUser(0L);
+
+        //assert
+        verify(userRepository).deleteById(0L);
     }
 
 
@@ -55,6 +66,8 @@ public class UserServiceTest {
     //stubbar passwordencoder för NPE
     @Test
     void addUserTest() {
+
+        //arrange
         UserRequestDTO dto = new UserRequestDTO(
                 "testUser",
                 "user@mail.se",
@@ -64,12 +77,37 @@ public class UserServiceTest {
                 "no bio",
                 "no image"
         );
-
-
+        //måste stubba passwordEncoder eftersom den är en mock = returnar null
+        //add user kräver en .encode
         when(passwordEncoder.encode(anyString())).thenReturn("ENCODED");
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+        //act
         userService.addUser(dto);
 
-        verify(userRepository).save(any(User.class));
+        //assert
+        verify(userRepository).save(captor.capture());
+        User saved = captor.getValue();
+        assertEquals("testUser", saved.getUsername());
     }
+
+    //hämtar alla users
+    @Test
+    void getAllUsersTest() {
+
+        //arrange
+        User user = new User();
+        user.setId(0L);
+        when(userRepository.findAll()).thenReturn(java.util.List.of(user));
+        //act
+        List<UserResponseDTO> result = userService.getAllUser();
+        //assert
+        UserResponseDTO dto = result.get(0);
+        verify(userRepository).findAll();
+        assertEquals(1, result.size());
+        assertEquals(0, dto.id());
+    }
+
+
 }
 
