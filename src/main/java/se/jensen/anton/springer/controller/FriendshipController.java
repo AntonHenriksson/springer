@@ -28,7 +28,7 @@ public class FriendshipController {
         return ResponseEntity.ok(friendshipService.getFriendShipsAccepted(userId));
     }
 
-    //aceptera vänskap
+    //acceptera vänskap
     @PutMapping("/{id}/accept")
     public ResponseEntity<FriendshipRespondDTO> accept(@PathVariable Long id) {
         return ResponseEntity.ok(friendshipService.acceptFriendship(id));
