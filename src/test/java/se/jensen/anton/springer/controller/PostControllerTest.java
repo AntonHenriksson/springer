@@ -36,6 +36,7 @@ public class PostControllerTest {
                 1L,
                 "post 1",
                 LocalDateTime.now(),
+                10L,
                 "testUser",
                 "testAdmin"
         );
@@ -43,6 +44,7 @@ public class PostControllerTest {
                 2L,
                 "post 2",
                 LocalDateTime.now(),
+                20L,
                 "testuser2",
                 "testAdmin2"
         );
@@ -50,6 +52,7 @@ public class PostControllerTest {
                 3L,
                 "post 3",
                 LocalDateTime.now(),
+                30L,
                 "testUser3",
                 "testAdmin3"
         );
