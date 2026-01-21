@@ -40,4 +40,10 @@ public class FriendshipController {
         return ResponseEntity.ok(friendshipService.rejectFriendship(id));
     }
 
+    //sök vänskap
+    @PutMapping("/users/{userId}/add-friend")
+    public ResponseEntity<FriendshipRespondDTO> addFriend(@PathVariable Long userId, Long receiverId) {
+        return ResponseEntity.ok(friendshipService.sendFriendRequest(userId, receiverId));
+    }
+
 }
