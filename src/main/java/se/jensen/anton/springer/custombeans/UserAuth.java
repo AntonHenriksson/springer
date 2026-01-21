@@ -9,6 +9,7 @@ public class UserAuth {
     public UserAuth() {
     }
 
+    //för username
     public boolean checkIfAuth(String username) {
         String currentUsername = SecurityUtils.getCurrentUsername();
 
@@ -22,4 +23,21 @@ public class UserAuth {
 
         return currentUsername.equals(username);
     }
+
+    //för id
+    public boolean checkIfAuth(Long id) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
+        if (currentUserId == null || id == null) {
+            return false;
+        }
+
+        if (SecurityUtils.currentUserHasRole("ADMIN")) {
+            return true;
+        }
+
+        return currentUserId.equals(id);
+    }
+
+
 }

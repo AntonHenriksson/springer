@@ -2,6 +2,7 @@ package se.jensen.anton.springer.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import se.jensen.anton.springer.dto.FriendshipRespondDTO;
 import se.jensen.anton.springer.mapper.FriendMapper;
@@ -27,6 +28,8 @@ public class FriendshipService {
     }
 
     //hämta alla accepterade vänskaper
+    //här borde alla inloggade kunna se dina vänner?
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public List<FriendshipRespondDTO> getFriendShipsAccepted(Long userId) {
         logger.debug("Fetching ACCEPTED friendships for userId={}", userId);
 
@@ -45,6 +48,8 @@ public class FriendshipService {
     }
 
     //hämta alla vänskaper oavsett status
+    //måste vara inloggad som receiver
+    @PreAuthorize("@userAuth.checkIfAuth(#userId)")
     public List<FriendshipRespondDTO> getFriendshipsAnyStatus(Long userId) {
         logger.debug("Fetching ALL friendships for userId={}", userId);
 
@@ -61,6 +66,8 @@ public class FriendshipService {
     }
 
     //acceptera vänskap
+    //måste vara inloggad som receiver auth fixa
+    @PreAuthorize("@userAuth.checkIfAuth(#id)")
     public FriendshipRespondDTO acceptFriendship(Long id) {
         logger.info("Attempting to ACCEPT friendshipId={}", id);
 
@@ -80,6 +87,8 @@ public class FriendshipService {
     }
 
     //rejecta vänskap
+    //tänk här om man ska vara inloggad som receiver
+    @PreAuthorize("@userAuth.checkIfAuth(#id)")
     public FriendshipRespondDTO rejectFriendship(Long id) {
         logger.info("Attempting to DECLINE friendshipId={}", id);
 
@@ -96,6 +105,7 @@ public class FriendshipService {
     }
 
     //skicka vänskapsförfrågan
+    @PreAuthorize("@userAuth.checkIfAuth(#senderId)")
     public FriendshipRespondDTO sendFriendRequest(Long senderId, Long receiverId) {
         logger.info("User {} is sending friend request to user {}", senderId, receiverId);
 

@@ -12,7 +12,7 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
-
+    
     @Column(name = "text", nullable = false)
     private String text;
     @Column(name = "created_at")
