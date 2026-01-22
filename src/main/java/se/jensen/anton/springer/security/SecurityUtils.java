@@ -37,6 +37,32 @@ public final class SecurityUtils {
     }
 
 
+    public static Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof MyUserDetails userDetails) {
+            return userDetails.getId();
+        }
+
+        if (principal instanceof Jwt jwt) {
+            Object userIdClaim = jwt.getClaims().get("userId"); // or "id"
+
+            if (userIdClaim instanceof Number number) {
+                return number.longValue();
+            }
+        }
+
+        return null;
+    }
+
+
     public static boolean currentUserHasRole(String role) {
         if (role == null) {
             return false;
