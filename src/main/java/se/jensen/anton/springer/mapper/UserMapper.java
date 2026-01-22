@@ -11,9 +11,15 @@ public class UserMapper {
 
 
     public UserResponseDTO toDto(User user) {
-        return new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole(),
+                user.getDisplayName(),
+                user.getBio(),
+                user.getProfileImagePath());
 
-        //lägga till och skapa ny dto constr när jag vet var vi är påväg i programmet
     }
 
     public User fromDto(UserRequestDTO dto) {

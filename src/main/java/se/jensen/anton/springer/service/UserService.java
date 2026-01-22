@@ -114,7 +114,7 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 
-    @PreAuthorize("@userAuth.checkIfAuth(#id)")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public UserWithPostsResponseDTO getUserWithPosts(Long id) {
         User user = userRepository.findUserWithPosts(id)
                 .orElseThrow(() -> {
