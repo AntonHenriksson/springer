@@ -3,6 +3,15 @@ package se.jensen.anton.springer.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
+/**
+ * DTO for updating a user's info
+ *
+ * @param username         the user's username (max 50 characters)
+ * @param email            the user's email address (max 60 characters)
+ * @param displayName      the user's display name (max 30 characters)
+ * @param bio              the user's biography (max 200 characters)
+ * @param profileImagePath the path to the profile image (max 100 characters)
+ */
 public record UserUpdateRequestDTO(
         @Size(max = 50)
         String username,
