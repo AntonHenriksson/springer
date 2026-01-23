@@ -47,7 +47,7 @@ public class FriendshipService {
     }
 
     //hämta alla vänskaper oavsett status
-    @PreAuthorize("userAuth.checkIfAuth(userId)")
+    @PreAuthorize("@userAuth.checkIfAuth(#userId)")
     public List<FriendshipRespondDTO> getFriendshipsAnyStatus(Long userId) {
         logger.debug("Fetching ALL friendships for userId={}", userId);
 

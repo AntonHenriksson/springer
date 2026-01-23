@@ -34,7 +34,7 @@ public class UserService {
     }
 
     //only admin, consider making a /public and publicResponseDTO for users
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public UserResponseDTO findUserById(Long id) {
         logger.debug("Finding user with id={}", id);
         Optional<User> user = userRepository.findById(id);
