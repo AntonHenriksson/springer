@@ -62,7 +62,7 @@ public class PostControllerTest {
 
         when(postsService.getPosts(0, 10, Optional.empty())).thenReturn(page);
 
-        mockMvc.perform(get("/posts")
+        mockMvc.perform(get("/posts/get")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
