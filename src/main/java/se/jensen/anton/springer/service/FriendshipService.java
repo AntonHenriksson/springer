@@ -64,7 +64,7 @@ public class FriendshipService {
     }
 
     //acceptera vänskap
-    @PreAuthorize("@friendshipAuth.isReceiver(id)")
+    @PreAuthorize("@friendshipAuth.isReceiver(#id)")
     public FriendshipRespondDTO acceptFriendship(Long id) {
         logger.info("Attempting to ACCEPT friendshipId={}", id);
 
@@ -84,7 +84,7 @@ public class FriendshipService {
     }
 
     //rejecta vänskap
-    @PreAuthorize("@friendshipAuth.isReceiver(id)")
+    @PreAuthorize("@friendshipAuth.isReceiver(#id)")
     public FriendshipRespondDTO rejectFriendship(Long id) {
         logger.info("Attempting to DECLINE friendshipId={}", id);
 
