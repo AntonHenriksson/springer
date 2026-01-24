@@ -1,15 +1,18 @@
 package se.jensen.anton.springer.custombeans;
 
 import org.springframework.stereotype.Component;
+import se.jensen.anton.springer.repo.UserRepository;
 import se.jensen.anton.springer.security.SecurityUtils;
 
 @Component("userAuth")
 public class UserAuth {
 
-    public UserAuth() {
+    private final UserRepository userRepository;
+
+    public UserAuth(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    //för username
     public boolean checkIfAuth(String username) {
         String currentUsername = SecurityUtils.getCurrentUsername();
 
@@ -24,11 +27,10 @@ public class UserAuth {
         return currentUsername.equals(username);
     }
 
-    //för id
     public boolean checkIfAuth(Long id) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
+        String currentUsername = SecurityUtils.getCurrentUsername();
 
-        if (currentUserId == null || id == null) {
+        if (currentUsername == null || id == null) {
             return false;
         }
 
@@ -36,8 +38,8 @@ public class UserAuth {
             return true;
         }
 
-        return currentUserId.equals(id);
+        return userRepository.findByUsername(currentUsername)
+                .map(u -> u.getId().equals(id))
+                .orElse(false);
     }
-
-
 }

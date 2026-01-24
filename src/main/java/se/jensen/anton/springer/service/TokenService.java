@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import se.jensen.anton.springer.security.MyUserDetails;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -35,20 +36,21 @@ public class TokenService {
         String scope = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
+        //lägger till id pga friendships
+        //tror jag målat in mig i ett hörn med det, skulle nog använt username
+        Long userId = null;
+        if (authentication.getPrincipal() instanceof MyUserDetails userDetails) {
+            userId = userDetails.getId();
+        }
         JwtClaimsSet claims = JwtClaimsSet.builder()
-
-
-                //self fungerar men inte att rekommendera
-                //hade lite problem i tester så fick kolla upp
-                //blir kvar tillsvidare
-
-
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getName())
                 .claim("scope", scope)
+                .claim("userId", userId)
                 .build();
+
         try {
             String token = jwtEncoder.encode(JwtEncoderParameters
                             .from(claims))

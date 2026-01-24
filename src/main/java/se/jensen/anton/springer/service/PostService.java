@@ -55,7 +55,11 @@ public class PostService {
 
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public Page<FeedResponseDTO> getGlobalFeed(int page, int size) {
+    public Page<FeedResponseDTO> getPosts(int page, int size, Optional<Long> userId) {
+        if (userId.isPresent()) {
+            return postRepository.findByUserId(userId.get(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created")))
+                    .map(feedMapper::toDto);
+        }
         PageRequest pageRequest =
                 PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created"));
         return postRepository.findAll(pageRequest)

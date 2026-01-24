@@ -12,6 +12,7 @@ import se.jensen.anton.springer.dto.PostResponseDTO;
 import se.jensen.anton.springer.service.PostService;
 
 import java.security.Principal;
+import java.util.Optional;
 
 
 @RestController
@@ -25,12 +26,13 @@ public class PostController {
 
     // Returnerar det globala flödet av inlägg för alla användare, med sidindelning
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @GetMapping
-    public ResponseEntity<Page<FeedResponseDTO>> getGlobalFeed(
+    @GetMapping("/get")
+    public ResponseEntity<Page<FeedResponseDTO>> getPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Optional<Long> userId
     ) {
-        Page<FeedResponseDTO> feed = postService.getGlobalFeed(page, size);
+        Page<FeedResponseDTO> feed = postService.getPosts(page, size, userId);
         return ResponseEntity.ok(feed);
     }
 
@@ -49,7 +51,7 @@ public class PostController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDTO> get(@PathVariable Long id) {
+    public ResponseEntity<PostResponseDTO> getPosts(@PathVariable Long id) {
         return ResponseEntity.ok(postService.findById(id));
     }
 

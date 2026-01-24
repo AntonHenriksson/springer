@@ -13,6 +13,7 @@ import se.jensen.anton.springer.service.PostService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,7 +31,7 @@ public class PostControllerTest {
 
     @Test
     @WithMockUser(username = "Admin", roles = "ADMIN")
-    void shouldGetGlobalFeed() throws Exception {
+    void shouldGetPosts() throws Exception {
 
         FeedResponseDTO dto1 = new FeedResponseDTO(
                 1L,
@@ -59,7 +60,7 @@ public class PostControllerTest {
 
         Page<FeedResponseDTO> page = new PageImpl<>(List.of(dto1, dto2, dto3));
 
-        when(postsService.getGlobalFeed(0, 10)).thenReturn(page);
+        when(postsService.getPosts(0, 10, Optional.empty())).thenReturn(page);
 
         mockMvc.perform(get("/posts")
                         .param("page", "0")
