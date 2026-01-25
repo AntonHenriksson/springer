@@ -7,6 +7,11 @@ import se.jensen.anton.springer.model.Post;
 @Component
 public class FeedMapper {
 
+    /**
+     *
+     * @param post
+     * @return
+     */
     public FeedResponseDTO toDto(Post post) {
         return new FeedResponseDTO(
                 post.getId(),

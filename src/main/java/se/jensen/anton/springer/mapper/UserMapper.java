@@ -7,7 +7,7 @@ import se.jensen.anton.springer.dto.UserUpdateRequestDTO;
 import se.jensen.anton.springer.model.User;
 
 /**
- * Mapper component for converting between User-related DTOs and {@link User} entity.
+ * Mapper component for converting between User-related DTOs and {@link User} entities.
  * The mapper focuses on data transformation.
  */
 @Component

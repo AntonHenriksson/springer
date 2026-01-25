@@ -8,6 +8,7 @@ import se.jensen.anton.springer.service.FriendshipService;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/friendship")
 public class FriendshipController {
