@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * This is a JPA entity which corresponds to the "posts" table in the database.
+ */
 @Entity
 @Table(name = "posts")
 public class Post {
@@ -12,7 +15,7 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = 0L;
-    
+
     @Column(name = "text", nullable = false)
     private String text;
     @Column(name = "created_at")
@@ -32,7 +35,7 @@ public class Post {
     public Post() {
 
     }
-
+    
     @PrePersist
     protected void onCreate() {
         this.created = LocalDateTime.now();

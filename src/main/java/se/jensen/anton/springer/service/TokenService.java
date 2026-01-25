@@ -27,6 +27,13 @@ public class TokenService {
         this.jwtEncoder = jwtEncoder;
     }
 
+
+    /**
+     *
+     *
+     * @param authentication
+     * @return
+     */
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
 

@@ -12,6 +12,11 @@ import se.jensen.anton.springer.service.UserService;
 
 import java.util.List;
 
+/**
+ * REST controller for managing users.
+ * This class provides endpoints to create, read, update, and delete users as well as endpoints related to user posts and the currently authenticated user.
+ * Access to the endpoints is restricted based on the user role (ADMIN, USER or everyone).
+ */
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -39,7 +44,7 @@ public class UserController {
 
     /**
      * GET-method to fetch a specific user by its ID
-     * Access is allowed to users with either ADMIN- or USER-roles
+     * Access is allowed to users with either the ADMIN- or USER-role
      *
      * @param id ID of the user you want to fetch
      * @return ResponseEntity containing a UserResponseDTO object of a specific user
@@ -69,10 +74,10 @@ public class UserController {
 
     /**
      * PATCH-method to update a specific user's information
-     * Access is allowed to users with either ADMIN- or USER-roles
+     * Access is allowed to users with either the ADMIN- or USER-role
      *
      * @param id  ID of the user you want to update
-     * @param dto UserUpdateRequestDTO consists of username, email, displayName, bio and profileImagePath. Only the fields you want to change need to be provided.
+     * @param dto UserUpdateRequestDCreate, Read, Update, Delete usersTO consists of username, email, displayName, bio and profileImagePath. Only the fields you want to change need to be provided.
      * @return ResponseEntity containing the updated UserResponseDTO object
      */
     // Endpoint to update a user
@@ -85,7 +90,7 @@ public class UserController {
 
     /**
      * PUT-method to update the only user's password
-     * Access is allowed to users with either ADMIN- or USER-roles
+     * Access is allowed to users with either the ADMIN- or USER-role
      *
      * @param id  ID for the user whose password you want to change
      * @param dto UserPasswordRequestDTO which only contains a password property
@@ -102,7 +107,7 @@ public class UserController {
 
     /**
      * DELETE-method to delete a specific user by its ID
-     * Access is allowed to users with either ADMIN- or USER-roles
+     * Access is allowed to users with either the ADMIN- or USER-role
      *
      * @param id ID of the user you want to delete
      * @return ResponseEntity with no content if the user has been successfully deleted
@@ -118,7 +123,7 @@ public class UserController {
 
     /**
      * POST-method to create a new post
-     * Access is allowed to users with either ADMIN- or USER-roles.
+     * Access is allowed to users with either the ADMIN- or USER-role
      *
      * @param dto PostRequestDTO, which consists of text and creation timestamp, used to create a new post
      * @return ResponseEntity containing the created PostResponseDTO object
@@ -134,7 +139,7 @@ public class UserController {
 
     /**
      * GET-method to fetch a specific user together with all posts the user has created
-     * Access is allowed to users with either ADMIN- or USER-roles
+     * Access is allowed to users with either the ADMIN- or USER-role
      *
      * @param userId the user's ID to fetch its posts
      * @return ResponseEntity containing a UserWithPostsResponseDTO object (the user's info and its posts)
@@ -149,7 +154,7 @@ public class UserController {
     /**
      * GET-method to
      *
-     * @return
+     * @return ResponseEntity containing a UserResponseDTO object which contains the loggedin user's info
      */
     // Endpoint to show the user who is logged in (yourself)
     @PreAuthorize("isAuthenticated()")

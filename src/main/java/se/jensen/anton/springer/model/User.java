@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
+/**
+ * This is a JPA entity which corresponds to the "app_user" table in the database.
+ */
 @Entity
 @Table(name = "app_user")
 
