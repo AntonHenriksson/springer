@@ -67,7 +67,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); //Jag ska ändra URL från utvecklingsmiljön till produktionsmiljön sen
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",   // Vite dev
+                "http://localhost:4173",   // Vite preview
+                "dramatic-jennette-myprojects17-98866317.koyeb.app/" // Våran front koyeb
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
