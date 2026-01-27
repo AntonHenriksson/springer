@@ -20,6 +20,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * This class tests the {@link PostController} class
+ * It mocks the {@link PostService}
+ */
+
 @WebMvcTest(PostController.class)
 public class PostControllerTest {
 
@@ -29,6 +34,13 @@ public class PostControllerTest {
     @MockitoBean
     private PostService postsService;
 
+
+    /**
+     * Verifies that the /posts endpoint returns a paginated list of posts
+     * Mocks a user with the ADMIN role
+     * Mocks a page of 3 posts
+     * Asserts that the returned list has size 3
+     */
     @Test
     @WithMockUser(username = "Admin", roles = "ADMIN")
     void shouldGetPosts() throws Exception {

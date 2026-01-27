@@ -24,7 +24,6 @@ public class PostMapper {
     }
 
     public void updateEntity(PostRequestDTO dto, Post post) {
-        post.setCreated(dto.created());
         post.setText(dto.text());
     }
 }
