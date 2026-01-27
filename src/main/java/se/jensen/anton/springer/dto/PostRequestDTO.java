@@ -1,8 +1,6 @@
 package se.jensen.anton.springer.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDateTime;
 
@@ -11,11 +9,11 @@ import java.time.LocalDateTime;
  * It consists of content of the post and the timestamp when the post was created.
  *
  * @param text    Text of the post. This must not be blank
- * @param created Timestamp when the post was created. This must not be null and is in the past or present
+ * @param created Timestamp when the post was created.
  */
 public record PostRequestDTO(
         @NotBlank String text,
-        @NotNull @PastOrPresent LocalDateTime created) {
+        LocalDateTime created) {
 }
 
 

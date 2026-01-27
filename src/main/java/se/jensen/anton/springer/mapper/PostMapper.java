@@ -4,9 +4,7 @@ package se.jensen.anton.springer.mapper;
 import org.springframework.stereotype.Component;
 import se.jensen.anton.springer.dto.PostRequestDTO;
 import se.jensen.anton.springer.dto.PostResponseDTO;
-import se.jensen.anton.springer.dto.UserUpdateRequestDTO;
 import se.jensen.anton.springer.model.Post;
-import se.jensen.anton.springer.model.User;
 
 /**
  * Mapper component for converting between Post-related DTOs and {@link Post} entities.
@@ -50,7 +48,6 @@ public class PostMapper {
      * @param post the existing {@link Post} entity to be updated
      */
     public void updateEntity(PostRequestDTO dto, Post post) {
-        post.setCreated(dto.created());
         post.setText(dto.text());
     }
 }

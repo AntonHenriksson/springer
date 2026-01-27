@@ -48,7 +48,7 @@ public class SecurityConfig {
      * This method configures the Spring Security filter chain
      *
      * @param http {@link HttpSecurity} object
-     * @return
+     * @return {@link SecurityFilterChain} built from the provided configuration
      * @throws Exception Exception if an error occurs while building the security configuration
      */
     @Bean
@@ -86,7 +86,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",   // Vite dev
                 "http://localhost:4173",   // Vite preview
-                "dramatic-jennette-myprojects17-98866317.koyeb.app/" // Våran front koyeb
+                "https://dramatic-jennette-myprojects17-98866317.koyeb.app" // Våran front koyeb
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

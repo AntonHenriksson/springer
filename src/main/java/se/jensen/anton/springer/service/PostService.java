@@ -22,6 +22,7 @@ import se.jensen.anton.springer.repo.PostRepository;
 import se.jensen.anton.springer.repo.UserRepository;
 import se.jensen.anton.springer.security.SecurityUtils;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -124,7 +125,6 @@ public class PostService {
                     logger.debug("Post not found, id={}", id);
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
                 });
-
         postMapper.updateEntity(dto, post);
         logger.info("Post updated, id={}", post.getId());
         return postMapper.toDto(post);
@@ -146,6 +146,7 @@ public class PostService {
         Post post = postMapper.fromDto(dto);
         User currentUser = SecurityUtils.requireCurrentUser(userRepository);
         post.setUser(currentUser);
+        post.setCreated(LocalDateTime.now());
         postRepository.save(post);
         logger.info("Post added, id={}", post.getId());
         return postMapper.toDto(post);

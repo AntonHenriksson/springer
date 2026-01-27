@@ -13,6 +13,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * This class tests the {@link TokenService} class
+ * Generates a key pair and uses it to create a JwtEncoder and JwtDecoder
+ * The JwtEncoder and JwtDecoder are used to create a Jwt
+ * The Jwt is then asserted to have the correct claim
+ */
+
 class TokenServiceTest {
 
     @Test
@@ -25,7 +32,7 @@ class TokenServiceTest {
         JwtEncoder encoder = jwtEncoder(keyPair);
         JwtDecoder decoder = jwtDecoder(keyPair);
 
-        TokenService tokenService = new TokenService(encoder);
+        TokenService tokenService = new TokenService(encoder, decoder);
 
         var auth = new UsernamePasswordAuthenticationToken(
                 "userADMIN",
@@ -39,9 +46,6 @@ class TokenServiceTest {
         assertThat(jwt.getSubject()).isEqualTo("userADMIN");
         assertThat(jwt.getClaimAsString("scope")).isEqualTo("ADMIN");
         assertThat(jwt.getClaimAsString("iss")).isEqualTo("self");
-        //detta är en lösning för tillfälligt testande av projekt
-        //spring security förväntar sig att iss är en uri
-        //        assertThat(jwt.getIssuer().toString()).isEqualTo("self");
 
         Instant now = Instant.now();
         assertThat(jwt.getExpiresAt()).isAfter(now);

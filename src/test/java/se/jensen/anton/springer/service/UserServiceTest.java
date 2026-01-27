@@ -23,6 +23,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * This test class tests the {@link UserService} class
+ * It mocks the {@link UserRepository} and {@link PasswordEncoder}
+ * The class uses @Spy to create a spy of the {@link UserMapper}
+ */
+
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
@@ -39,31 +45,41 @@ public class UserServiceTest {
     @InjectMocks
     UserService userService;
 
-    //unit test som testar service logik och inget annat
 
+    /**
+     * Unittest for the deleteUser method
+     * This test tries to delete a user with id 0
+     * It uses a stubbed userRepository to return an Optional.of(user)
+     * It asserts that the userRepository.findById method has been called
+     * It verifies that userRepository.deleteById behaves as expected
+     */
 
-    //om testet inte kastar exception ska det passa
-    //verifierar bara om metoden har kallats
     @Test
     void deleteUserTest() {
         //arrange
         User user = new User();
         user.setId(0L);
 
-        //stubba userRepository eftersom .orElseThrow kommer kasta
-        //pga ingen jpa
+
         when(userRepository.findById(0L))
                 .thenReturn(Optional.of(user));
         //act
         userService.deleteUser(0L);
 
         //assert
+        verify(userRepository).findById(0L);
         verify(userRepository).deleteById(0L);
     }
 
+    /**
+     * Unittest for the addUser method
+     * This test tries to add a user with username testUser
+     * It uses a stubbed passwordEncoder to return "ENCODED"
+     * It asserts that the userRepository.save-method has been called
+     * A captor is used to capture the user that has been saved
+     * The captured user is then asserted to have the username testUser
+     */
 
-    //testar service, ska pass med id null pga ingen jpa
-    //stubbar passwordencoder för NPE
     @Test
     void addUserTest() {
 
@@ -77,8 +93,7 @@ public class UserServiceTest {
                 "no bio",
                 "no image"
         );
-        //måste stubba passwordEncoder eftersom den är en mock = returnar null
-        //add user kräver en .encode
+
         when(passwordEncoder.encode(anyString())).thenReturn("ENCODED");
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 
@@ -91,7 +106,14 @@ public class UserServiceTest {
         assertEquals("testUser", saved.getUsername());
     }
 
-    //hämtar alla users
+    /**
+     * Unittest for the getAllUsers method
+     * This test tries to get all users
+     * It uses a stubbed userRepository to return a list of users
+     * It asserts that the userRepository.findAll method has been called
+     * It asserts that the returned list has size 1
+     * It asserts that the first user in the list has id 0
+     */
     @Test
     void getAllUsersTest() {
 
@@ -105,7 +127,7 @@ public class UserServiceTest {
         UserResponseDTO dto = result.get(0);
         verify(userRepository).findAll();
         assertEquals(1, result.size());
-        assertEquals(0, dto.id());
+        assertEquals(0L, dto.id());
     }
 
 
