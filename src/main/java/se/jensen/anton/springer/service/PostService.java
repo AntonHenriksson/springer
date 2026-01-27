@@ -25,6 +25,9 @@ import se.jensen.anton.springer.security.SecurityUtils;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * Service layer for handling {@link Post} related business logic.
+ */
 @Service
 public class PostService {
     private final PostRepository postRepository;
@@ -40,6 +43,14 @@ public class PostService {
         this.feedMapper = feedMapper;
     }
 
+    /**
+     * This method fetches a post identified by its ID
+     * Access is allowed to users with either the ADMIN- or USER-role
+     *
+     * @param id ID of the post to fetch
+     * @return {@link PostResponseDTO} containing the post data
+     * @throws ResponseStatusException with HTTP status 404 if no post with the given ID exists
+     */
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public PostResponseDTO findById(Long id) {
         logger.debug("Finding post with id={}", id);
@@ -55,6 +66,15 @@ public class PostService {
     }
 
 
+    /**
+     * This method fetches a paginated list of posts identified by the given userId.
+     * If a user ID is provided, only posts created by the user will be returned.
+     *
+     * @param page   Page index
+     * @param size   The number of posts per page
+     * @param userId Optional user ID to filter posts by author of the posts
+     * @return {@link Page} of {@link FeedResponseDTO}
+     */
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public Page<FeedResponseDTO> getPosts(int page, int size, Optional<Long> userId) {
         if (userId.isPresent()) {
@@ -67,6 +87,17 @@ public class PostService {
                 .map(feedMapper::toDto);
     }
 
+    /**
+     * This method fetches a paginated feed for the specified user.
+     * The feed contains posts created by the user, which are sorted by creation time in descending order.
+     * Access is allowed to users with either the ADMIN- or USER-role
+     *
+     * @param username The name of the user whose feed is fetched
+     * @param page     Page index
+     * @param size     The number of posts per page
+     * @return {@link Page} of {@link FeedResponseDTO}
+     * @throws ResponseStatusException with HTTP status 404 if no user with the given username found.
+     */
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public Page<FeedResponseDTO> getMyWall(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
@@ -76,6 +107,15 @@ public class PostService {
                 .map(feedMapper::toDto);
     }
 
+    /**
+     * This method updated an existing post.
+     * Access is allowed to users with either the ADMIN-role or the post's author
+     *
+     * @param id  ID of the post to update
+     * @param dto The new post data which includes updated inputs
+     * @return {@link PostResponseDTO} containing the updated post data
+     * @throws ResponseStatusException with HTTP 404 status
+     */
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or @postSecurity.isOwner(#id)")
     public PostResponseDTO updatePost(Long id, PostRequestDTO dto) {
@@ -91,6 +131,14 @@ public class PostService {
     }
 
 
+    /**
+     * This method creates a new post
+     * The post is automatically related with the currently authenticated user.
+     * Access is allowed to users with either the ADMIN- or USER-role.
+     *
+     * @param dto {@link PostRequestDTO}
+     * @return {@link PostResponseDTO} object containing a new post data
+     */
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public PostResponseDTO addPost(PostRequestDTO dto) {
@@ -104,6 +152,13 @@ public class PostService {
         return postMapper.toDto(post);
     }
 
+    /**
+     * This method deletes a post by its ID.
+     * Access is allowed to users with either the ADMIN-role or the post's author
+     *
+     * @param id ID of the post to delete
+     * @throws ResponseStatusException with HTTP 404 status
+     */
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or @postSecurity.isOwner(#id)")
     public void deletePost(Long id) {

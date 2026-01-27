@@ -15,6 +15,11 @@ import java.security.Principal;
 import java.util.Optional;
 
 
+/**
+ * REST controller for managing posts.
+ * This class provides endpoints to create, read, update, and delete posts.
+ * All endpoints are available for users with either ADMIN- or USER-role.
+ */
 @RestController
 @RequestMapping("/posts")
 public class PostController {
@@ -24,6 +29,15 @@ public class PostController {
         this.postService = postService;
     }
 
+    /**
+     * GET-method to fetch posts created by all users
+     * The response is divided into pages
+     * Access is allowed to users with either the ADMIN- or USER-role
+     *
+     * @param page Page index (default is 0)
+     * @param size The number of posts per page (default size is 10 posts)
+     * @return {@link ResponseEntity} containing a paginated list of {@link FeedResponseDTO}
+     */
     // Returnerar det globala flödet av inlägg för alla användare, med sidindelning
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/get")
@@ -36,6 +50,16 @@ public class PostController {
         return ResponseEntity.ok(feed);
     }
 
+    /**
+     * GET-method to fetch all posts created by the logged in user
+     * The response is divided into pages
+     * Access is allowed to users with either the ADMIN- or USER-role
+     *
+     * @param page      Page index (default is 0)
+     * @param size      The number of posts per page (default size is 10 posts)
+     * @param principal The security principal containing the authenticated user's info
+     * @return {@link ResponseEntity} containing a paginated list of {@link FeedResponseDTO} created by the user
+     */
     // Returnerar det personliga flödet för den inloggade användaren, med sidindelning
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/me")
@@ -49,18 +73,41 @@ public class PostController {
     }
 
 
+    /**
+     * GET-method to get one specific post using its ID
+     * Access is allowed to users with either the ADMIN- or USER-role
+     *
+     * @param id ID of the specific post
+     * @return {@link ResponseEntity} containing a {@link PostResponseDTO} for the post
+     */
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDTO> getPosts(@PathVariable Long id) {
         return ResponseEntity.ok(postService.findById(id));
     }
 
+    /**
+     * PUT-method to update an existing post with the provided content
+     * The timestamp of the post will be updated automatically.
+     * Access is allowed to users with either the ADMIN- or USER-role.
+     *
+     * @param id  ID of the post to update
+     * @param dto a {@link PostResponseDTO} containing the updated post's content
+     * @return {@link ResponseEntity} containing a {@link PostResponseDTO} of the updated post
+     */
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping("/{id}")
     public ResponseEntity<PostResponseDTO> update(@PathVariable Long id, @RequestBody @Valid PostRequestDTO dto) {
         return ResponseEntity.ok(postService.updatePost(id, dto));
     }
 
+    /**
+     * DELETE-method to delete a specific post identified by its ID from the database
+     * Access is allowed to users with either the ADMIN- or USER-role.
+     *
+     * @param id ID of the post to delete
+     * @return an empty {@link ResponseEntity} with HTTP 204 status
+     */
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

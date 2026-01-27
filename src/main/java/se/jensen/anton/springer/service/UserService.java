@@ -18,6 +18,11 @@ import se.jensen.anton.springer.repo.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service layer for handling user-related business logic.
+ * This class provides operations such as creating, fetching, updating, and deleting users, as well as managing passwords and fetching user-related data.
+ * Access to methods is controlled using {@link PreAuthorize}.
+ */
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -33,6 +38,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * This method fetches a specific user by its ID
+     * Access is allowed to users with either the ADMIN- or USER-role
+     *
+     * @param id ID of the user to fetch
+     * @return {@link UserResponseDTO} mapped from the {@link User} entity
+     * @throws ResponseStatusException with HTTP status 404 if no user with the given ID exists
+     */
     //only admin, consider making a /public and publicResponseDTO for users
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public UserResponseDTO findUserById(Long id) {
@@ -47,6 +60,12 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 
+    /**
+     * This method fetches all users stored in the database
+     * Access is only allowed to users with the ADMIN-role
+     *
+     * @return {@link List} of {@link UserResponseDTO} mapped from the {@link User} entity
+     */
     //only admin should see this
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDTO> getAllUser() {
@@ -57,6 +76,15 @@ public class UserService {
                 .toList();
     }
 
+    /**
+     * This method updates an existing user's info
+     * Only authenticated users are only allowed to update their own account.
+     *
+     * @param id  ID of the user to update
+     * @param dto {@link UserUpdateRequestDTO} containing data to update the user
+     * @return updated user info as {@link UserResponseDTO}
+     * @throws ResponseStatusException with HTTP status 404 if no user with the given ID exists
+     */
     @Transactional
     @PreAuthorize("@userAuth.checkIfAuth(#id)")
     public UserResponseDTO updateUser(Long id, UserUpdateRequestDTO dto) {
@@ -73,6 +101,15 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    /**
+     * This method updates a user's password
+     * Only authenticated users are only allowed to update their own password.
+     * The updated password is encoded using {@link PasswordEncoder} before it is saved.
+     *
+     * @param id  ID of the user to update the password
+     * @param dto {@link UserPasswordRequestDTO} containing the new password
+     * @throws ResponseStatusException with HTTP status 404 if no user with the given ID exists
+     */
     @Transactional
     @PreAuthorize("@userAuth.checkIfAuth(#id)")
     public void updatePassword(Long id, UserPasswordRequestDTO dto) {
@@ -88,6 +125,13 @@ public class UserService {
 
     }
 
+    /**
+     * This method creates a new user.
+     * The password is encoded using {@link PasswordEncoder} before it is saved.
+     *
+     * @param dto {@link UserRequestDTO} containing the new user's info including username, email, password, role, displayName, bio and profileImagePath
+     * @return the newly created user as {@link UserResponseDTO}
+     */
     // måste för tillfället vara öppen till andra
     // hur fungerar /public???
     @Transactional
@@ -100,6 +144,13 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    /**
+     * This method deletes a specific user identified by the given ID
+     * Only authenticated users are only allowed to delete their own users.
+     *
+     * @param id ID of the user to delete
+     * @throws ResponseStatusException with HTTP status 404 if no user with the given ID exists
+     */
     @Transactional
     @PreAuthorize("@userAuth.checkIfAuth(#id)")
     public void deleteUser(Long id) {
@@ -114,6 +165,14 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 
+    /**
+     * This method fetches a user along with their posts
+     * Access is allowed to users with either the ADMIN- or USER-role.
+     *
+     * @param id ID of the user
+     * @return {@link UserWithPostsResponseDTO} containing the user's data and their list of posts
+     * @throws ResponseStatusException with HTTP status 404 if no user with the given ID exists
+     */
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public UserWithPostsResponseDTO getUserWithPosts(Long id) {
         User user = userRepository.findUserWithPosts(id)
@@ -132,6 +191,12 @@ public class UserService {
     }
 
 
+    /**
+     * This method fetches the currently authenticated user
+     *
+     * @return {@link UserResponseDTO} containing the authenticated user's data
+     * @throws ResponseStatusException with HTTP status 401 if the authenticated user cannot be found.
+     */
     @PreAuthorize("isAuthenticated()")
     public UserResponseDTO getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();

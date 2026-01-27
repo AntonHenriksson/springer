@@ -10,6 +10,12 @@ import se.jensen.anton.springer.model.User;
 import se.jensen.anton.springer.repo.UserRepository;
 import se.jensen.anton.springer.security.MyUserDetails;
 
+
+/**
+ * Service that implements {@link UserDetailsService} for Spring Security.
+ * This service returns a {@link MyUserDetails} object, which Spring Security uses for authentication and authorization checks.
+ * {@link #loadUserByUsername(String)}} is automatically called during the authentication flow via Spring Security and does not need to be invoked manually by other classes.
+ */
 @Service
 public class UserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
@@ -19,6 +25,14 @@ public class UserDetailService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * This method loads user info by username.
+     * It fetches {@link User} entity from the database, and return it as a {@link MyUserDetails} object.
+     *
+     * @param username The username identifies the user whose data is to be fetched
+     * @return {@link MyUserDetails} object including the user's ID, username, password, role (authorities), the original User object, and the account status flags: isEnabled(), isAccountNonExpired(), isAccountNonLocked(), and isCredentialsNonExpired().
+     * @throws UsernameNotFoundException if no user with the given username exists
+     */
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {

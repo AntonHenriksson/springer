@@ -37,10 +37,20 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.List;
 
+/**
+ * Security configuration for JWT authentication, CORS, password encoding, OAuth2 resource server, and key management.
+ */
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * This method configures the Spring Security filter chain
+     *
+     * @param http {@link HttpSecurity} object
+     * @return {@link SecurityFilterChain} built from the provided configuration
+     * @throws Exception Exception if an error occurs while building the security configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -64,6 +74,12 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * This method provides CORS configuration.
+     * It allows access from specific FE origins and permits GET, POST, PUT, DELETE, and OPTIONS methods.
+     *
+     * @return {@link CorsConfigurationSource} with CORS settings applied
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -80,11 +96,24 @@ public class SecurityConfig {
         return source;
     }
 
+    /**
+     * This method provides a {@link PasswordEncoder} for hashing passwords
+     *
+     * @return {@link BCryptPasswordEncoder} instance
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * This method generates an RSA key pair from Base64-encoded keys defined in application properties.
+     *
+     * @param privateKey Base64-encoded private key
+     * @param publicKey  Base64-encoded public key
+     * @return {@link KeyPair} containing the RSA keys
+     * @throws Exception if an error occurs while generating the key pair
+     */
     @Bean
     public KeyPair keyPair(
             @Value("${jwt.private-key}") String privateKey,
@@ -102,6 +131,12 @@ public class SecurityConfig {
         return new KeyPair(pubKey, privKey);
     }
 
+    /**
+     * This method provides a JWK source for JWT.
+     *
+     * @param keyPair RSA key pair
+     * @return {@link JWKSource} instance
+     */
     @Bean
     public JWKSource<SecurityContext> jwkSource(KeyPair keyPair) {
         RSAKey rsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
@@ -112,11 +147,23 @@ public class SecurityConfig {
         return (jwkSelector, context) -> jwkSelector.select(jwkSet);
     }
 
+    /**
+     * This method provides a JWT encoder.
+     *
+     * @param jwkSource JWK source
+     * @return {@link JwtEncoder} instance
+     */
     @Bean
     public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
         return new NimbusJwtEncoder(jwkSource);
     }
 
+    /**
+     * This method provides a JWT decoder.
+     *
+     * @param keyPair RSA key pair
+     * @return {@link JwtDecoder} instance
+     */
     @Bean
     public JwtDecoder jwtDecoder(KeyPair keyPair) {
         return NimbusJwtDecoder
@@ -124,6 +171,11 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * This method provides a {@link JwtAuthenticationConverter} to extract authorities from JWT.
+     *
+     * @return {@link JwtAuthenticationConverter} instance
+     */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter =
@@ -136,6 +188,13 @@ public class SecurityConfig {
         return authenticationConverter;
     }
 
+    /**
+     * This method provides the {@link AuthenticationManager} used by Spring Security.
+     *
+     * @param configuration {@link AuthenticationConfiguration} object
+     * @return {@link AuthenticationManager} instance
+     * @throws Exception if an error occurs while retrieving the authentication manager
+     */
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
             throws Exception {

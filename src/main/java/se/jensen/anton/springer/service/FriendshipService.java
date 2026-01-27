@@ -12,6 +12,9 @@ import se.jensen.anton.springer.repo.UserRepository;
 
 import java.util.List;
 
+/**
+ * Service layer for managing friendships between users.
+ */
 @Service
 public class FriendshipService {
     private final FriendshipRepository friendshipRepository;
@@ -27,6 +30,13 @@ public class FriendshipService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * This method fetches all accepted friendships for the user identified by userId
+     * Access is allowed to users with either the ADMIN- or USER-role
+     *
+     * @param userId ID of the user whose accepted friendships are fetched
+     * @return {@link List} of {@link FriendshipRespondDTO} with status "ACCEPTED"
+     */
     //hämta alla accepterade vänskaper
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public List<FriendshipRespondDTO> getFriendShipsAccepted(Long userId) {
@@ -46,6 +56,13 @@ public class FriendshipService {
         return result;
     }
 
+    /**
+     * This method fetches all friendships for the given user regardless of status.
+     * Access is allowed only to the authenticated user who has the same user ID as the given userId
+     *
+     * @param userId ID of the user whose friendships are fetched
+     * @return {@link List} of {@link FriendshipRespondDTO} for all friendship statuses
+     */
     //hämta alla vänskaper oavsett status
     @PreAuthorize("@userAuth.checkIfAuth(#userId)")
     public List<FriendshipRespondDTO> getFriendshipsAnyStatus(Long userId) {
@@ -63,6 +80,14 @@ public class FriendshipService {
         return result;
     }
 
+    /**
+     * This method accepts a pending friend request.
+     * Only the receiver of the friendship request is allowed to accept the friendship request.
+     *
+     * @param id ID of the friendship request to accept
+     * @return {@link FriendshipRespondDTO} representing the accepted friendship
+     * @throws RuntimeException if the friendship does not exist
+     */
     //acceptera vänskap
     @PreAuthorize("@friendshipAuth.isReceiver(#id)")
     public FriendshipRespondDTO acceptFriendship(Long id) {
@@ -83,6 +108,14 @@ public class FriendshipService {
         return friendMapper.toDto(friendshipRepository.save(friendship));
     }
 
+    /**
+     * This method declines a pending friend request.
+     * Only the receiver of the friendship request is allowed to decline the friendship request.
+     *
+     * @param id ID of the friendship request to reject
+     * @return {@link FriendshipRespondDTO} representing the declined friendship
+     * @throws RuntimeException if the friendship does not exist
+     */
     //rejecta vänskap
     @PreAuthorize("@friendshipAuth.isReceiver(#id)")
     public FriendshipRespondDTO rejectFriendship(Long id) {
@@ -100,6 +133,14 @@ public class FriendshipService {
         return friendMapper.toDto(friendshipRepository.save(friendship));
     }
 
+    /**
+     * This method sends a new friend request to others.
+     * The sender must be the currently authenticated user.
+     *
+     * @param senderId   ID of the user sending the friend request
+     * @param receiverId ID of the user receiving the friend request
+     * @return {@link FriendshipRespondDTO} representing the created friend request
+     */
     //skicka vänskapsförfrågan
     @PreAuthorize("@userAuth.checkIfAuth(#senderId)")
     public FriendshipRespondDTO sendFriendRequest(Long senderId, Long receiverId) {
