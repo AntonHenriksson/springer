@@ -9,12 +9,21 @@ import org.springframework.web.server.ResponseStatusException;
 import se.jensen.anton.springer.model.User;
 import se.jensen.anton.springer.repo.UserRepository;
 
+/**
+ * Class for checking the currently authenticated user's info
+ */
 public final class SecurityUtils {
 
     private SecurityUtils() {
     }
 
 
+    /**
+     * This method returns the username of the currently authenticated user.
+     *
+     * @return The username of the current user, or null if not authenticated
+     * @throws IllegalStateException if the principal type is unexpected
+     */
     public static String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -37,6 +46,12 @@ public final class SecurityUtils {
     }
 
 
+    /**
+     * This method returns the ID of the currently authenticated user.
+     * If no user is authenticated, or the authentication represents an anonymous user, it returns null.
+     *
+     * @return ID of the current user, or null if not authenticated
+     */
     public static Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -63,6 +78,12 @@ public final class SecurityUtils {
     }
 
 
+    /**
+     * This method checks whether the currently authenticated user has the specified role.
+     *
+     * @param role The role of the current user.
+     * @return True: if the current user has the role. False: if not.
+     */
     public static boolean currentUserHasRole(String role) {
         if (role == null) {
             return false;
@@ -79,6 +100,13 @@ public final class SecurityUtils {
                         -> required.equals(a.getAuthority()));
     }
 
+    /**
+     * This method fetches the current {@link User} entity from the given {@link UserRepository}.
+     *
+     * @param userRepository The repository used to find the user
+     * @return {@link User} entity of the currently authenticated user
+     * @throws ResponseStatusException if no user is authenticated or the user is not found
+     */
     public static User requireCurrentUser(UserRepository userRepository) {
         String currentUsername = getCurrentUsername();
         if (currentUsername == null) {

@@ -5,6 +5,10 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+/*
+ * Configuration class for setting up Swagger documentation for the API.
+ * This configuration sets API metadata (title, version) and enables JWT Bearer authentication for Swagger UI.
+ */
 
 @OpenAPIDefinition(
         info = @Info(title = "API med JWT", version = "1.0"),

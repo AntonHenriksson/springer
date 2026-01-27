@@ -4,6 +4,11 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Base64;
 
+/**
+ * KeyGenerator for generating an RSA key pair and printing them as Base64 strings.
+ * Upon running this class, it will generate PRIVATE_KEY and PUBLIC_KEY, which are used for JWT signing or cryptographic purposes.
+ */
+
 public class KeyGenerator {
     public static void main(String[] args) throws Exception {
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");

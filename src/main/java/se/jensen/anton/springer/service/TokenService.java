@@ -14,22 +14,32 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
+/**
+ * TokenService for generating JSON Web Tokens (JWT) for authenticated users.
+ * It creates a signed JWT based on the provided {@link Authentication} object
+ */
 @Service
 public class TokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
     private final JwtEncoder jwtEncoder;
 
+    /**
+     * This method constructs a TokenService with the give {@link JwtEncoder}
+     *
+     * @param jwtEncoder {@link JwtEncoder} used to encode and sign JWTs
+     */
     public TokenService(JwtEncoder jwtEncoder) {
         this.jwtEncoder = jwtEncoder;
     }
 
 
     /**
+     * This method generates a signed JWT for the given authenticated user
      *
-     *
-     * @param authentication
-     * @return
+     * @param authentication {@link Authentication} object, provided by Spring Security, representing the authenticated user
+     * @return JWT as {@link String}
+     * @throws RuntimeException if token generation fails
      */
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();

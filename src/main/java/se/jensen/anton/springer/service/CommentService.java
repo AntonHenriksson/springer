@@ -15,6 +15,9 @@ import se.jensen.anton.springer.repo.CommentRepository;
 import se.jensen.anton.springer.repo.PostRepository;
 import se.jensen.anton.springer.repo.UserRepository;
 
+/**
+ * Service layer for handling comment-related business logic.
+ */
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
@@ -29,6 +32,15 @@ public class CommentService {
         this.commentMapper = commentMapper;
     }
 
+    /**
+     * This method creates a new comment for a given post and user.
+     *
+     * @param postId   ID of the post to which the comment is made
+     * @param username The username of the user who creates the comment
+     * @param request  {@link CommentRequestDTO} containing the comment text
+     * @return {@link CommentResponseDTO} representing the created comment
+     * @throws IllegalArgumentException if the post or user cannot be found
+     */
     public CommentResponseDTO createComment(Long postId, String username, CommentRequestDTO request) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
@@ -46,6 +58,14 @@ public class CommentService {
         return commentMapper.toDto(savedComment);
     }
 
+    /**
+     * This method fetches a paginated list of comments for a specific post.
+     *
+     * @param postId ID of the post
+     * @param page   Page index
+     * @param size   The number of posts per page
+     * @return {@link Page} of {@link CommentResponseDTO}
+     */
     public Page<CommentResponseDTO> getCommentsForPost(Long postId, int page, int size) {
         Pageable pageable = PageRequest.of(
                 page,

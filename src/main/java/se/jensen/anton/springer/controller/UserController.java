@@ -152,9 +152,10 @@ public class UserController {
     }
 
     /**
-     * GET-method to
+     * GET-method to fetch user details of the user who is currently logged in, based on the authentication information stored in the Spring Security context.
+     * Access is restricted to authenticated users.
      *
-     * @return ResponseEntity containing a UserResponseDTO object which contains the loggedin user's info
+     * @return ResponseEntity containing a UserResponseDTO object which contains the logged-in user's info.
      */
     // Endpoint to show the user who is logged in (yourself)
     @PreAuthorize("isAuthenticated()")
