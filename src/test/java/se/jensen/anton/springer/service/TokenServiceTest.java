@@ -25,7 +25,7 @@ class TokenServiceTest {
         JwtEncoder encoder = jwtEncoder(keyPair);
         JwtDecoder decoder = jwtDecoder(keyPair);
 
-        TokenService tokenService = new TokenService(encoder);
+        TokenService tokenService = new TokenService(encoder, decoder);
 
         var auth = new UsernamePasswordAuthenticationToken(
                 "userADMIN",
