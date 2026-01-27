@@ -11,13 +11,22 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * Global exception handler for REST controllers.
+ * GlobalExceptionHandler is a centralized exception handler for REST controllers.
+ *
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    /**
+     * This method extracts field errors from the exception and returns them as {@link Map} of field validation errors
+     * * them as a map where the key is the field name and the value is the
+     * * validation error message.
+     *
+     * @param ex {@link MethodArgumentNotValidException} thrown by a controller
+     * @return {@link ResponseEntity} containing {@link Map} of field validation errors, which consists of the field name as the key and the validation error message as the value, with HTTP 400 status
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException
-            (MethodArgumentNotValidException ex) {
+    (MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         for (org.springframework.validation.FieldError fieldError :
                 ex.getBindingResult().getFieldErrors()) {
@@ -29,6 +38,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    /**
+     * This method returns the exception message as the response.
+     * The error occurs when a requested resource is not found in the database or the system.
+     *
+     * @param ex {@link NoSuchElementException} thrown by a controller
+     * @return {@link ResponseEntity} containing the error message with HTTP 404 status
+     */
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
