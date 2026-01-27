@@ -25,8 +25,8 @@ public class FriendMapper {
                 friendship.getSender().getId(),
                 friendship.getReceiver().getId(),
                 friendship.getStatus(),
-                friendship.getReceiver().getDisplayName(),
-                friendship.getSender().getDisplayName()
+                friendship.getSender().getDisplayName(),
+                friendship.getReceiver().getDisplayName()
         );
     }
 
